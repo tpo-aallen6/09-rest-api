@@ -54,7 +54,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
     res.json({ course })
   } else {
     res.status(400)
-      .json({ msg: `No course found with an id of ${req.params.id}`})
+      .json({ msg: `No course found with an id of ${req.params.id}` })
   }
 }))
 
