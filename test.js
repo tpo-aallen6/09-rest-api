@@ -1,0 +1,5 @@
+const { expect } = require('chai')
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+chai.use(chaiAsPromised)
+const { Sequelize, Op, Model, DataTypes } = require('sequelize')
