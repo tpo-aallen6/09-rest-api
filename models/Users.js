@@ -2,9 +2,9 @@ const { Model, DataTypes } = require('sequelize')
 const bcrypt = require('bcryptjs')
 
 module.exports = (sequelize) => {
-  class User extends Model {}
+  class Users extends Model {}
 
-  User.init({
+  Users.init({
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -44,7 +44,7 @@ module.exports = (sequelize) => {
         }
       }
     },
-    password: {
+    unsavedPassword: {
       type: DataTypes.VIRTUAL,
       allowNull: false,
       validate: {
@@ -54,19 +54,19 @@ module.exports = (sequelize) => {
         notEmpty: {
           msg: 'Please provide a password'
         },
-        len: {
-          args: [8, 20],
-          msg: 'The password should be between 8 and 20 characters in length'
-        }
+        // len: {
+        //   args: [8, 20],
+        //   msg: 'The password should be between 8 and 20 characters in length'
+        // }
       }
     },
-    confirmedPassword: {
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
       set (val) {
-        if (val === this.password) {
+        if (val === this.unsavedPassword) {
           const hashedPassword = bcrypt.hashSync(val)
-          this.setDataValue('confirmedPassword', hashedPassword)
+          this.setDataValue('password', hashedPassword)
         }
       },
       validate: {
@@ -77,9 +77,9 @@ module.exports = (sequelize) => {
     }
   }, { sequelize })
 
-  User.associate = (models) => {
-    User.hasMany(models.Course)
+  Users.associate = (models) => {
+    Users.hasMany(models.Courses)
   }
 
-  return User
+  return Users
 }

@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
-  class Course extends Model {}
+  class Courses extends Model {}
 
-  Course.init({
+  Courses.init({
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,9 +36,9 @@ module.exports = (sequelize) => {
     }
   }, { sequelize })
 
-  Course.associate = (models) => {
-    Course.belongsTo(models.User)
+  Courses.associate = (models) => {
+    Courses.belongsTo(models.Users)
   }
 
-  return Course
+  return Courses
 }
