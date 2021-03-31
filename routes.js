@@ -52,7 +52,8 @@ router.get('/courses', asyncHandler(async (req, res) => {
   const courses = await Course.findAll({
     attributes: { exclude: ['createdAt', 'updatedAt'] },
     include: {
-      model: User
+      model: User,
+      attributes: {exclude: ['password', 'createdAt', 'updatedAt']}
     }
   })
   res.json({ courses })
@@ -66,7 +67,8 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
       id: parseInt(req.params.id)
     },
     include: {
-      model: User
+      model: User,
+      attributes: {exclude: ['password', 'createdAt', 'updatedAt']}
     },
     
   })
@@ -112,7 +114,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
       title: req.body.title,
       description: req.body.description,
       userId: user.id
-    }, { fields: ['title', 'description', 'userId'] })
+    })
     res.status(204).end()
   } else {
     res.status(403).json({ msg: 'Access denied' })
