@@ -44,34 +44,16 @@ module.exports = (sequelize) => {
         }
       }
     },
-    unsavedPassword: {
-      type: DataTypes.VIRTUAL,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: 'A password is required'
-        },
-        notEmpty: {
-          msg: 'Please provide a password'
-        },
-        // len: {
-        //   args: [8, 20],
-        //   msg: 'The password should be between 8 and 20 characters in length'
-        // }
-      }
-    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       set (val) {
-        if (val === this.unsavedPassword) {
-          const hashedPassword = bcrypt.hashSync(val)
-          this.setDataValue('password', hashedPassword)
-        }
+        const hashedPassword = bcrypt.hashSync(val)
+        this.setDataValue('password', hashedPassword)
       },
       validate: {
         notNull: {
-          msg: 'Both passwords must match'
+          msg: 'A password is required'
         }
       }
     }
@@ -79,7 +61,10 @@ module.exports = (sequelize) => {
 
   Users.associate = (models) => {
     Users.hasMany(models.Courses, {
-      foreignKey: 'userId'
+      foreignKey: {
+        name: 'userId',
+        allowNull: false
+      }
     })
   }
 
