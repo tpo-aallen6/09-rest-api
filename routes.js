@@ -21,7 +21,7 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 router.post('/users', asyncHandler(async (req, res) => {
   try {
     await User.create(req.body)
-    res.status(201).json({ "message": "Account successfully created!" })
+    res.redirect('/', 201)
   } catch (error) {
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => err.message)
@@ -63,8 +63,14 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 // POST route that creates a new course
 router.post('/courses', asyncHandler(async (req, res) => {
   try {
-    await Course.create(req.body)
-    res.status(201).end()
+    const newCourse = await Course.create(req.body)
+    const lastCourse = await Course.findOne({
+      where: {
+        title: newCourse.title,
+        description: newCourse.description
+      }
+    })
+    res.redirect('/courses/' + lastCourse.id, 201)
   } catch (error) {
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => err.message)
@@ -72,6 +78,39 @@ router.post('/courses', asyncHandler(async (req, res) => {
     } else {
       throw error
     }
+  }
+}))
+
+// PUT route that deletes a course
+router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser
+  const found = await Course.findByPk(req.params.id)
+
+  if (found && found.userId === user.id) {
+    await found.update({
+      title: req.body.title,
+      description: req.body.description
+    }, { fields: ['title', 'description'] })
+    res.status(204).end()
+  } else {
+    res.status(403).json({ msg: 'Access denied' })
+  }
+}))
+
+// DELETE route that deletes a course
+router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser
+  const found = await Course.findByPk(req.params.id)
+
+  if (found && found.userId === user.id) {
+    await Course.destroy({
+      where: {
+        id: parseInt(req.params.id)
+      }
+    })
+    res.status(204).end()
+  } else {
+    res.status(403).json({ msg: 'Access denied' })
   }
 }))
 
