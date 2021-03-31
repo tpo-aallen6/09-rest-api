@@ -34,13 +34,17 @@ module.exports = (sequelize) => {
     materialsNeeded: {
       type: DataTypes.STRING
     }
-  }, { sequelize })
-
+  },
   Courses.associate = (models) => {
     Courses.belongsTo(models.Users, {
       foreignKey: 'userId'
     })
-  }
+  }, {
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
+    sequelize
+  })
 
   return Courses
 }
