@@ -1,22 +1,20 @@
 const express = require('express')
 const { asyncHandler } = require('./middleware/async-handler')
-// const { authenticateUser } = require('./middleware/auth-user')
+const { authenticateUser } = require('./middleware/auth-user')
 const User = require('./models').Users
 const Course = require('./models').Courses
 
 // Construct a router instance.
 const router = express.Router()
 
-// GET route that returns a list of users
-//  authenticateUser, ('/users', authenticateUser, asyncHandler(...))
-router.get('/users', asyncHandler(async (req, res) => {
-  // const user = req.currentUser
-  // res.json({
-  //   name: user.firstName,
-  //   email: user.emailAddress
-  // })
-  const users = await User.findAll()
-  res.json({ users })
+// GET route that returns the current authenticated user
+router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
+  const user = req.currentUser
+  res.json({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    emailAddress: user.emailAddress
+  })
 }))
 
 // POST route that creates a new user
@@ -36,7 +34,11 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 // GET route that returns a list of all courses
 router.get('/courses', asyncHandler(async (req, res) => {
-  const courses = await Course.findAll()
+  const courses = await Course.findAll({
+    include: {
+      model: User
+    }
+  })
   res.json({ courses })
 }))
 
