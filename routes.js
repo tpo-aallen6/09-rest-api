@@ -15,17 +15,14 @@ const router = express.Router()
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
   const currentUser = req.currentUser
   const user = await User.findAll({
-    attributes: { exclude: ['createdAt', 'updatedAt', 'password'] },
+    attributes: {
+      exclude: ['password', 'createdAt', 'updatedAt']
+    },
     where: {
       id: currentUser.id
     }
   })
-  res.json({ user }
-
-    // firstName: user.firstName,
-    // lastName: user.lastName,
-    // emailAddress: user.emailAddress
-  )
+  res.json({ user })
 }))
 
 // POST route that creates a new user
@@ -44,16 +41,23 @@ router.post('/users', asyncHandler(async (req, res) => {
 }))
 
 /**
- * COURSES Routes
- */
-
+** ---COURSE ROUTES---
+**/
 // GET route that returns a list of all courses
 router.get('/courses', asyncHandler(async (req, res) => {
   const courses = await Course.findAll({
-    attributes: { exclude: ['createdAt', 'updatedAt'] },
+    attributes: {
+      exclude: ['createdAt', 'updatedAt']
+    },
     include: {
       model: User,
+<<<<<<< HEAD
       attributes: {exclude: ['password', 'createdAt', 'updatedAt']}
+=======
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt']
+    }
+>>>>>>> 47d9dc051b3391458f33a08b6369425b1323f7e2
     }
   })
   res.json({ courses })
@@ -62,16 +66,26 @@ router.get('/courses', asyncHandler(async (req, res) => {
 // GET route that returns a single course
 router.get('/courses/:id', asyncHandler(async (req, res) => {
   const course = await Course.findAll({
-    attributes: {exclude: ['createdAt', 'updatedAt']},
+    attributes: {
+      exclude: ['createdAt', 'updatedAt']
+    },
     where: {
       id: parseInt(req.params.id)
     },
     include: {
       model: User,
+<<<<<<< HEAD
       attributes: {exclude: ['password', 'createdAt', 'updatedAt']}
     },
     
+=======
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt']
+      }
+    }
+>>>>>>> 47d9dc051b3391458f33a08b6369425b1323f7e2
   })
+
   if (course) {
     res.json({ course })
   } else {
@@ -83,6 +97,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 // POST route that creates a new course
 router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
   const user = req.currentUser
+
   if (user) {
     try {
       const newCourse = await Course.create(req.body)
@@ -110,12 +125,30 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
   const found = await Course.findByPk(req.params.id)
 
   if (found && found.userId === user.id) {
+<<<<<<< HEAD
     await found.update({
       title: req.body.title,
       description: req.body.description,
       userId: user.id
     })
     res.status(204).end()
+=======
+    try {
+    await found.update({
+      title: req.body.title,
+      description: req.body.description,
+      userId: user.id
+    })
+    res.status(204).end()
+    } catch (error) {
+      if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+        const errors = error.errors.map(err => err.message)
+        res.status(400).json({ errors })
+      } else {
+        throw error
+      }
+    }
+>>>>>>> 47d9dc051b3391458f33a08b6369425b1323f7e2
   } else {
     res.status(403).json({ msg: 'Access denied' })
   }
