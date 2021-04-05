@@ -94,7 +94,13 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
 
   if (user) {
     try {
-      const newCourse = await Course.create(req.body)
+      const newCourse = await Course.create({
+        title: req.body.title,
+        description: req.body.description,
+        estimatedTime: req.body.estimatedTime,
+        materialsNeeded: req.body.materialsNeeded,
+        userId: user.id
+      })
       const lastCourse = await Course.findOne({
         where: {
           title: newCourse.title,
@@ -123,6 +129,8 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res) => {
       await found.update({
         title: req.body.title,
         description: req.body.description,
+        estimatedTime: req.body.estimatedTime,
+        materialsNeeded: req.body.materialsNeeded,
         userId: user.id
       })
       res.status(204).end()
