@@ -101,13 +101,7 @@ router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
         materialsNeeded: req.body.materialsNeeded,
         userId: user.id
       })
-      const lastCourse = await Course.findOne({
-        where: {
-          title: newCourse.title,
-          description: newCourse.description
-        }
-      })
-      res.redirect(201, '/courses/' + lastCourse.id)
+      res.redirect(201, '/courses/' + newCourse.id)
     } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message)
