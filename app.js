@@ -2,9 +2,13 @@ const express = require('express')
 const morgan = require('morgan')
 const routes = require('./routes')
 const { sequelize } = require('./models')
+const cors = require('cors')
 
 // Create the Express app.
 const app = express()
+
+// Enable CORS
+app.use(cors())
 
 // Setup request body JSON parsing.
 app.use(express.json())
@@ -56,6 +60,6 @@ app.set('port', process.env.PORT || 5000)
 sequelize.sync()
   .then(() => {
     const server = app.listen(app.get('port'), () => {
-      console.log(`Express server is listening on port ${server.address().port}`)
+      console.log(`CORS-enabled web server listening on port ${server.address().port}`)
     })
   })
